@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital/Doctor Search</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .form-group input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+    #result {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
+<script>
+    function search() {
+        var location = document.getElementById("location").value;
+        var query = document.getElementById("query").value;
+        
+        fetch('http://127.0.0.1:5009/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'location=' + location + '&query=' + query
+        })
+        .then(response => response.json())
+        .then(data => {
+            var resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = ""; // Clear previous results
+            
+            if (data.length > 0) {
+                data.forEach(place => {
+                    var name = place.display_name || "N/A";
+                    var lat = place.lat || "N/A";
+                    var lon = place.lon || "N/A";
+                    
+                    var div = document.createElement("div");
+                    div.innerHTML = "<strong>Name:</strong> " + name + "<br>" +
+                                    "<strong>Latitude:</strong> " + lat + "<br>" +
+                                    "<strong>Longitude:</strong> " + lon + "<br><br>";
+                    resultDiv.appendChild(div);
+                });
+            } else {
+                resultDiv.textContent = "No results found.";
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Hospital/Doctor Search</h2>
+    <div class="form-group">
+        <label for="location">Your Location:</label>
+        <input type="text" id="location" name="location" placeholder="Enter your location" required>
+    </div>
+    <div class="form-group">
+        <label for="query">Query:</label>
+        <input type="text" id="query" name="query" placeholder="Enter your query (e.g., hospital, doctor)" required>
+    </div>
+    <button type="button" class="btn" onclick="search()">Search</button>
+    
+    <div id="result"></div>
+</div>
+
+</body>
+</html>

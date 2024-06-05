@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D.A.R.V.I.S</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <link rel="shortcut icon" href="img/D.A.R.V.I.S.-removebg-preview-removebg-preview.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="index.css">
+    
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="navbar">WELCOME TO OUR AI ASSISTANT!!!</div>
+        </nav>
+    </header>
+    <div class="no">
+        <div class="note">Click on the microphone icon and start speaking</div>
+    </div>
+    <div class="speech_container">
+        <i id="microphone-icon" style="font-size:24px" class="fa fa-microphone" onclick="startListening()"></i>
+        <button id="stop-button" class="BUTTON button--ghost" style="display:none" onclick="stopListening()">Stop</button>
+    </div>
+    <div id="assistant-response"></div>
+    
+    <script>
+    function startListening() {
+        recognition = new webkitSpeechRecognition(); // Initialize speech recognition
+        recognition.lang = 'en-US'; // Set language to English
+        recognition.start(); // Start speech recognition
+        document.getElementById('assistant-response').innerHTML = `<p>Listening...</p>`;
+        document.getElementById('microphone-icon').style.display = 'none'; // Hide microphone icon
+        document.getElementById('stop-button').style.display = 'inline'; // Show stop button
+    
+        recognition.onresult = function(event) {
+            var query = event.results[0][0].transcript; // Get the transcribed speech
+            document.getElementById('assistant-response').innerHTML=`<p>User's query:${query}</p>`
+    
+            // Send the query to the Flask server
+            fetch('http://127.0.0.1:5001/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({action:'start_listening',query:query})
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("assistant-response").innerText = "";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+        }
+    }
+
+    function stopListening() {
+        if (recognition) {
+            recognition.stop();
+            document.getElementById('assistant-response').innerHTML = `<p>Stopped listening.</p>`;
+            document.getElementById('microphone-icon').style.display = 'inline'; // Show microphone icon
+            document.getElementById('stop-button').style.display = 'none'; // Hide stop button
+        }
+    }
+    </script>
+      <footer class="footer section">
+        <div class="footer__container container grid">
+            <div class="footer__content">
+                <a href="#" class="footer__logo">
+                    <img src="img/D.A.R.V.I.S.-removebg-preview-removebg-preview.png" alt="" class="footer__logo-img">
+                    D.A.R.V.I.S
+                </a>
+
+                
+                <div class="footer__social">
+                    <a href="https://www.facebook.com/" target="_blank" class="footer__social-link">
+                        <i class='bx bxl-facebook'></i>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" class="footer__social-link">
+                        <i class='bx bxl-instagram-alt' ></i>
+                    </a>
+                    <a href="https://twitter.com/" target="_blank" class="footer__social-link">
+                        <i class='bx bxl-twitter' ></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer__content">
+                <h3 class="footer__title">About</h3>
+                
+                <ul class="footer__links">
+                    <li>
+                        <a href="aboutus.html" class="footer__link">About Us</a>
+                    </li>
+                    <li>
+                        <a href="purpose.html" class="footer__link">Features</a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer__link">News</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer__content">
+                <h3 class="footer__title">Our Services</h3>
+                
+                <ul class="footer__links">
+                    <li>
+                        <a href="education.html" class="footer__link">Education</a>
+                    </li>
+                    <li>
+                        <a href="medical.html" class="footer__link">Medical</a>
+                    </li>
+                    <li>
+                        <a href="weather.html" class="footer__link">Environment</a>
+                    </li>
+                    <li>
+                        <a href="other.html" class="footer__link">Other AIs</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer__content">
+                <h3 class="footer__title">Our Company</h3>
+                
+                <ul class="footer__links">
+                    <li>
+                        <a href="#" class="footer__link">Blog</a>
+                    </li>
+                    <li>
+                        <a href="aboutus.html" class="footer__link">About us</a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer__link">Our mission</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <span class="footer__copy">© 2024 Darvis. All rigths reserved</span>
+
+       
+    </footer>
+
+    <a href="#" class="scrollup" id="scroll-up">
+        <i class='bx bx-up-arrow-alt scrollup__icon'></i>
+    </a>
+
+
+<script src="js/scrollreveal.min.js"></script>
+
+<script src="js/swiper-bundle.min.js"></script>
+
+<script src="js/main.js"></script>
+</body>
+</html>
